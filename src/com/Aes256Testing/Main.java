@@ -150,10 +150,15 @@ public class Main {
                                "01","01","02","03",
                                "03","01","01","02",};
         String[] mod = new String[4];
-        byte test = mixColumnsMultiply((byte) Integer.parseInt(RGF[0],16),(byte) Integer.parseInt(message[0][0],16));
+        byte test = mixColumnsMultiply((byte) Integer.parseInt(RGF[0],16), (byte) Integer.parseInt(message[0][0],16));
         System.out.println(test);
         System.out.println(String.format("%02x", test));
         System.out.println(Integer.parseInt("b3",16));
+
+        test = mixColumnsMultiply((byte) Integer.parseInt(RGF[1],16), (byte) Integer.parseInt(message[1][0],16));
+        System.out.println(test);
+        System.out.println(String.format("%02x", test));
+        System.out.println(Integer.parseInt("da",16));
         //int sum = 0;
         /*for (int i = 0; i < 4; i++) {
             /*System.out.println(Integer.parseInt(message[i][0],16));
@@ -177,6 +182,7 @@ public class Main {
         //System.out.println(String.format("%02x", sum));
     }
 
+    // Taken from https://github.com/ajaytee/Comp3260
     public static byte mixColumnsMultiply(byte numRGF, byte messageInput) {
         //byte byteNumRGF = (byte) numRGF;
         byte returnValue = 0;
