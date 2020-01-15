@@ -150,14 +150,18 @@ public class Main {
                                "01","01","02","03",
                                "03","01","01","02",};
         String[] mod = new String[4];
+        byte test = mixColumnsMultiply((byte) Integer.parseInt(RGF[0],16),(byte) Integer.parseInt(message[0][0],16));
+        System.out.println(test);
+        System.out.println(String.format("%02x", test));
+        System.out.println(Integer.parseInt("b3",16));
         //int sum = 0;
-        for (int i = 0; i < 4; i++) {
+        /*for (int i = 0; i < 4; i++) {
             /*System.out.println(Integer.parseInt(message[i][0],16));
             System.out.println(Integer.parseInt(RGF[i],16));
             sum ^= Integer.parseInt(message[i][0],16) * Integer.parseInt(RGF[i],16);
-            System.out.println("Sum = " + sum);*/
+            System.out.println("Sum = " + sum);
             if (RGF[0] == "02") {
-                int holdInt = Integer.parseInt(message[i][0],16);
+                /*int holdInt = Integer.parseInt(message[i][0],16);
                 System.out.println(holdInt);
                 System.out.println(holdInt<<1);
                 //System.out.println(String.format("%02x", holdInt));
@@ -169,10 +173,24 @@ public class Main {
                 //System.out.println(String.format("%02x", holdInt));
                 System.exit(1);
             }
-
-
-        }
+        }*/
         //System.out.println(String.format("%02x", sum));
+    }
+
+    public static byte mixColumnsMultiply(byte numRGF, byte messageInput) {
+        //byte byteNumRGF = (byte) numRGF;
+        byte returnValue = 0;
+        byte temp = 0;
+        while (numRGF != 0) {
+            if ((numRGF & 1) != 0)
+                returnValue = (byte) (returnValue ^ messageInput);
+            temp = (byte) (messageInput & 0x80);
+            messageInput = (byte) (messageInput << 1);
+            if (temp != 0)
+                messageInput = (byte) (messageInput ^ 0x1b);
+            numRGF = (byte) ((numRGF & 0xff) >> 1);
+        }
+        return returnValue;
     }
 
     public static void generateKeySchedule(String[][] cypherKey){
