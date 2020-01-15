@@ -149,42 +149,19 @@ public class Main {
                                "01","02","03","01",
                                "01","01","02","03",
                                "03","01","01","02",};
-        String[] mod = new String[4];
-        byte test = mixColumnsMultiply((byte) Integer.parseInt(RGF[0],16), (byte) Integer.parseInt(message[0][0],16));
-        System.out.println(test);
-        System.out.println(String.format("%02x", test));
-        System.out.println(Integer.parseInt("b3",16));
-
-        test = mixColumnsMultiply((byte) Integer.parseInt(RGF[1],16), (byte) Integer.parseInt(message[1][0],16));
-        System.out.println(test);
-        System.out.println(String.format("%02x", test));
-        System.out.println(Integer.parseInt("da",16));
-        //int sum = 0;
-        /*for (int i = 0; i < 4; i++) {
-            /*System.out.println(Integer.parseInt(message[i][0],16));
-            System.out.println(Integer.parseInt(RGF[i],16));
-            sum ^= Integer.parseInt(message[i][0],16) * Integer.parseInt(RGF[i],16);
-            System.out.println("Sum = " + sum);
-            if (RGF[0] == "02") {
-                /*int holdInt = Integer.parseInt(message[i][0],16);
-                System.out.println(holdInt);
-                System.out.println(holdInt<<1);
-                //System.out.println(String.format("%02x", holdInt));
-                int xorint = Integer.parseInt("1b",16);
-                System.out.println(xorint);
-                System.out.println(holdInt ^ xorint);
-                System.out.println(String.format("%02x", holdInt ^ xorint));
-                System.out.println(Integer.parseInt("b3",16));
-                //System.out.println(String.format("%02x", holdInt));
-                System.exit(1);
-            }
-        }*/
-        //System.out.println(String.format("%02x", sum));
+        byte[] mod = new byte[4];
+        for (int i = 0; i < 4; i++) {
+            mod[i] = mixColumnsMultiply((byte) Integer.parseInt(RGF[i], 16), (byte) Integer.parseInt(message[i][0], 16));
+            System.out.println(mod[i]);
+            System.out.println(String.format("%02x", mod[i]));
+            System.out.println(Integer.parseInt("b3", 16));
+            System.out.println("----------------------");
+        }
+        System.out.println(String.format("%02x",(mod[0] ^ mod[1] ^ mod[2] ^ mod[3])));
     }
 
     // Taken from https://github.com/ajaytee/Comp3260
     public static byte mixColumnsMultiply(byte numRGF, byte messageInput) {
-        //byte byteNumRGF = (byte) numRGF;
         byte returnValue = 0;
         byte temp = 0;
         while (numRGF != 0) {
