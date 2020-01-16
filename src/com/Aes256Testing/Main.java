@@ -1,7 +1,5 @@
 package com.Aes256Testing;
 
-import java.util.*;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -46,19 +44,6 @@ public class Main {
         testPlainMessage[1][3] = "f8";
         testPlainMessage[2][3] = "48";
         testPlainMessage[3][3] = "08";
-
-        /*System.out.println((char) Integer.parseInt("2b",16));
-        System.out.println((char) Integer.parseInt("7e",16));
-        System.out.println((char) Integer.parseInt("15",16));
-        System.out.println((char) Integer.parseInt("16",16));
-        char ch = 'n';
-        String hex = String.format("%02x", (int) ch);
-        System.out.println(hex);
-        System.out.println("-----------------------");*/
-
-
-
-
 
         generateKeySchedule(testCypherKey);
         messageEncryption(testPlainMessage,testCypherKey);
@@ -181,10 +166,7 @@ public class Main {
 
         for (int i = 0; i < 4; i++) {
             a[i] = (char) Integer.parseInt(messageCol[i],16);
-            //System.out.println(Integer.toBinaryString(Integer.parseInt(messageCol[i],16)));
-            //System.out.println(Integer.toBinaryString(Integer.parseInt(messageCol[i],16) >> 7));
             highBit = Integer.parseInt(messageCol[i],16) >> 7;
-            //System.out.println("High bit = " + highBit);
             if (highBit == 1) highBit = 0xff;
             b[i] = (char) (Integer.parseInt(messageCol[i],16) << 1);
             b[i] ^= 0x1b & highBit;
@@ -198,7 +180,6 @@ public class Main {
         for (int i = 0; i < 4; i++) {
             if (intResult[i] > 255) intResult[i] ^= 256;
             stringResult[i] = String.format("%02x",intResult[i]);
-            //System.out.println(String.format("%02x",intResult[i]));
         }
 
         return stringResult;
@@ -219,48 +200,13 @@ public class Main {
     public static void generateKeySchedule(String[][] cypherKey){
         for (int i = 4; i < 44; i++) {
             String[] previousFour = getColumn2dArray(cypherKey, i-1);
-            /*previousFour[0] = cypherKey[0][i-1];
-            previousFour[1] = cypherKey[1][i-1];
-            previousFour[2] = cypherKey[2][i-1];
-            previousFour[3] = cypherKey[3][i-1];*/
-
-            /*if (i > 0) {
-                System.out.println("Previousfour 8");
-                System.out.println(previousFour[0]);
-                System.out.println(previousFour[1]);
-                System.out.println(previousFour[2]);
-                System.out.println(previousFour[3]);
-                System.out.println("-----------------------");
-            }*/
-
 
             if (i % 4 == 0) {
                 rotWordTransformation(previousFour);
-                /*if (i == 8) {
-                    System.out.println("After rotWord");
-                    System.out.println(previousFour[0]);
-                    System.out.println(previousFour[1]);
-                    System.out.println(previousFour[2]);
-                    System.out.println(previousFour[3]);
-                    System.out.println("-----------------------");
-                }*/
                 subBytesTransformation(previousFour);
             }
 
-            /*if (i == 8) {
-                System.out.println("After subBytes");
-                System.out.println(previousFour[0]);
-                System.out.println(previousFour[1]);
-                System.out.println(previousFour[2]);
-                System.out.println(previousFour[3]);
-                System.out.println("-----------------------");
-            }*/
-
             String[] colBack4 = getColumn2dArray(cypherKey, i - 4);
-            /*colBack4[0] = cypherKey[0][i-4];
-            colBack4[1] = cypherKey[1][i-4];
-            colBack4[2] = cypherKey[2][i-4];
-            colBack4[3] = cypherKey[3][i-4];*/
             hexXORTransformation(colBack4, previousFour, i);
 
             if (i > 0) {
