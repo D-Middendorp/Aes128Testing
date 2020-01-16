@@ -60,12 +60,12 @@ public class Main {
 
 
 
-        //generateKeySchedule(testCypherKey);
-        messageEncryption(testPlainMessage);
+        generateKeySchedule(testCypherKey);
+        messageEncryption(testPlainMessage,testCypherKey);
 
     }
 
-    public static void messageEncryption(String[][] testPlainMessage) {
+    public static void messageEncryption(String[][] testPlainMessage, String[][] testCypherKey) {
         for (int i = 0; i < 4; i++) {
             String[] colPM = getColumn2dArray(testPlainMessage, i);
             System.out.println("Before subbytes " + i);
@@ -95,6 +95,10 @@ public class Main {
 
         System.out.println("After mixColumns");
         mixColumns(testPlainMessage);
+        System.out.println("---------------");
+
+        System.out.println("After addRoundKey");
+        addRoundKey(testPlainMessage,testCypherKey,1);
         System.out.println("---------------");
 
 
@@ -145,25 +149,17 @@ public class Main {
     }
 
     public static void mixColumns(String[][] message) {
-        final String[] RGF = {"02","03","01","01",
-                               "01","02","03","01",
-                               "01","01","02","03",
-                               "03","01","01","02",};
-        byte[] mod = new byte[4];
         for (int i = 0; i < 4; i++) {
-            mod[i] = mixColumnsMultiply((byte) Integer.parseInt(RGF[i], 16), (byte) Integer.parseInt(message[i][0], 16));
-            System.out.println(mod[i]);
-            System.out.println(String.format("%02x", mod[i]));
-            System.out.println(Integer.parseInt("b3", 16));
-            System.out.println("----------------------");
+            String[] multipliedCol = mixColumnsMultiplyEntireColumn(getColumn2dArray(message, i));
+            setColumn2dArray(message,multipliedCol,i);
         }
-        System.out.println(String.format("%02x",(mod[0] ^ mod[1] ^ mod[2] ^ mod[3])));
+        print16Block(message);
     }
 
     // Taken from https://github.com/ajaytee/Comp3260
     public static byte mixColumnsMultiply(byte numRGF, byte messageInput) {
         byte returnValue = 0;
-        byte temp = 0;
+        byte temp;
         while (numRGF != 0) {
             if ((numRGF & 1) != 0)
                 returnValue = (byte) (returnValue ^ messageInput);
@@ -174,6 +170,50 @@ public class Main {
             numRGF = (byte) ((numRGF & 0xff) >> 1);
         }
         return returnValue;
+    }
+
+    public static String[] mixColumnsMultiplyEntireColumn(String[] messageCol) {
+        char[] a = new char[4];
+        char[] b = new char[4];
+        int[] intResult = new int[4];
+        String[] stringResult = new String[4];
+        int highBit;
+
+        for (int i = 0; i < 4; i++) {
+            a[i] = (char) Integer.parseInt(messageCol[i],16);
+            //System.out.println(Integer.toBinaryString(Integer.parseInt(messageCol[i],16)));
+            //System.out.println(Integer.toBinaryString(Integer.parseInt(messageCol[i],16) >> 7));
+            highBit = Integer.parseInt(messageCol[i],16) >> 7;
+            //System.out.println("High bit = " + highBit);
+            if (highBit == 1) highBit = 0xff;
+            b[i] = (char) (Integer.parseInt(messageCol[i],16) << 1);
+            b[i] ^= 0x1b & highBit;
+        }
+
+        intResult[0] = b[0] ^ a[3] ^ a[2] ^ b[1] ^ a[1];
+        intResult[1] = b[1] ^ a[0] ^ a[3] ^ b[2] ^ a[2];
+        intResult[2] = b[2] ^ a[1] ^ a[0] ^ b[3] ^ a[3];
+        intResult[3] = b[3] ^ a[2] ^ a[1] ^ b[0] ^ a[0];
+
+        for (int i = 0; i < 4; i++) {
+            if (intResult[i] > 255) intResult[i] ^= 256;
+            stringResult[i] = String.format("%02x",intResult[i]);
+            //System.out.println(String.format("%02x",intResult[i]));
+        }
+
+        return stringResult;
+
+    }
+
+    public static void addRoundKey(String[][] message, String[][] cypherKey, int round) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                int numMessage = Integer.parseInt(message[j][i],16);
+                int numCypher = Integer.parseInt(cypherKey[j][i+4*round],16);
+                message[j][i] = String.format("%02x",numMessage ^ numCypher);
+            }
+        }
+        print16Block(message);
     }
 
     public static void generateKeySchedule(String[][] cypherKey){
