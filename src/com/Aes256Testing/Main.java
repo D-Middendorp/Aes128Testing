@@ -67,53 +67,57 @@ public class Main {
     }
 
     public static void messageEncryption(String[][] testPlainMessage, String[][] testCypherKey) {
-        /*for (int i = 0; i < 4; i++) {
-            String[] colPM = getColumn2dArray(testPlainMessage, i);
-            System.out.println("Before subbytes " + i);
-            System.out.println(colPM[0]);
-            System.out.println(colPM[1]);
-            System.out.println(colPM[2]);
-            System.out.println(colPM[3]);
+        boolean youtubeTest = false;
+        if (youtubeTest) {
+            //noinspection SpellCheckingInspection
+            System.out.println("Before subbytes:");
+            print16Block(testPlainMessage);
             System.out.println("---------------");
-            subBytesTransformation(colPM);
-            System.out.println("After subbytes " + i);
-            System.out.println(colPM[0]);
-            System.out.println(colPM[1]);
-            System.out.println(colPM[2]);
-            System.out.println(colPM[3]);
+            subBytesTransformation(testPlainMessage);
+            //noinspection SpellCheckingInspection
+            System.out.println("After subbytes:");
+            print16Block(testPlainMessage);
             System.out.println("---------------");
-            setColumn2dArray(testPlainMessage, colPM, i);
-        }*/
-        System.out.println("Before subbytes:");
-        print16Block(testPlainMessage);
-        System.out.println("---------------");
+
+            shiftRows(testPlainMessage);
+
+            System.out.println("After shiftRows");
+            print16Block(testPlainMessage);
+            System.out.println("---------------");
+
+            System.out.println("After mixColumns");
+            mixColumns(testPlainMessage);
+            System.out.println("---------------");
+
+            System.out.println("After addRoundKey");
+            addRoundKey(testPlainMessage, testCypherKey, 1);
+            System.out.println("---------------");
+        }
+
+        // Initial Round.
+        addRoundKey(testPlainMessage,testCypherKey,0);
+
+        // 9 Main Rounds.
+        for (int i = 1; i <= 9; i++) {
+            subBytesTransformation(testPlainMessage);
+            shiftRows(testPlainMessage);
+            mixColumns(testPlainMessage);
+            addRoundKey(testPlainMessage,testPlainMessage,i);
+        }
+
         subBytesTransformation(testPlainMessage);
-        System.out.println("After subbytes:");
-        print16Block(testPlainMessage);
-        System.out.println("---------------");
-
         shiftRows(testPlainMessage);
-
-        System.out.println("After shiftRows");
-        print16Block(testPlainMessage);
-        System.out.println("---------------");
-
-        System.out.println("After mixColumns");
-        mixColumns(testPlainMessage);
-        System.out.println("---------------");
-
-        System.out.println("After addRoundKey");
-        addRoundKey(testPlainMessage,testCypherKey,1);
-        System.out.println("---------------");
-
-
+        addRoundKey(testPlainMessage,testPlainMessage,10);
     }
+
+
+
 
     private static void print16Block(String[][] block) {
         for (int i = 0; i < 4; i++) {
-            String msg = "";
+            StringBuilder msg = new StringBuilder();
             for (int j = 0; j < 4; j++) {
-                msg += block[i][j] + " ";
+                msg.append(block[i][j]).append(" ");
             }
             System.out.println(msg);
         }
