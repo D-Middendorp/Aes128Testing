@@ -19,95 +19,133 @@ public class Main {
             "e1", "f8", "98", "11", "69", "d9", "8e", "94", "9b", "1e", "87", "e9", "ce", "55", "28", "df",
             "8c", "a1", "89", "0d", "bf", "e6", "42", "68", "41", "99", "2d", "0f", "b0", "54", "bb", "16"};
 
+    private static String[][] cypherKey = new String[4][44];
+    private static String[][] plainMessage = new String[4][4];
+    private static boolean youTubeTest = false;
+
     public static void main(String[] args) {
-        String[][] testCypherKey = new String[4][44];
-        testCypherKey[0][0] = "2b";
-        testCypherKey[1][0] = "7e";
-        testCypherKey[2][0] = "15";
-        testCypherKey[3][0] = "16";
+        String testInput = "1234567890abcdef";
+        String testCypher = "abcdef1234567890";
 
-        testCypherKey[0][1] = "28";
-        testCypherKey[1][1] = "ae";
-        testCypherKey[2][1] = "d2";
-        testCypherKey[3][1] = "a6";
+        if (!youTubeTest) {
+            char[] testInputArray = testInput.toCharArray();
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    int tempInt = testInputArray[(i*4)+j];
+                    plainMessage[j][i] = String.format("%02x", tempInt);
+                }
+            }
 
-        testCypherKey[0][2] = "ab";
-        testCypherKey[1][2] = "f7";
-        testCypherKey[2][2] = "15";
-        testCypherKey[3][2] = "88";
+            testInputArray = testCypher.toCharArray();
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    int tempInt = testInputArray[(i*4)+j];
+                    cypherKey[j][i] = String.format("%02x", tempInt);
+                }
+            }
+        }
 
-        testCypherKey[0][3] = "09";
-        testCypherKey[1][3] = "cf";
-        testCypherKey[2][3] = "4f";
-        testCypherKey[3][3] = "3c";
+        if (youTubeTest) {
+            cypherKey[0][0] = "2b";
+            cypherKey[1][0] = "7e";
+            cypherKey[2][0] = "15";
+            cypherKey[3][0] = "16";
 
-        String[][] testPlainMessage = new String[4][4];
-        testPlainMessage[0][0] = "19";
-        testPlainMessage[1][0] = "3d";
-        testPlainMessage[2][0] = "e3";
-        testPlainMessage[3][0] = "be";
+            cypherKey[0][1] = "28";
+            cypherKey[1][1] = "ae";
+            cypherKey[2][1] = "d2";
+            cypherKey[3][1] = "a6";
 
-        testPlainMessage[0][1] = "a0";
-        testPlainMessage[1][1] = "f4";
-        testPlainMessage[2][1] = "e2";
-        testPlainMessage[3][1] = "2b";
+            cypherKey[0][2] = "ab";
+            cypherKey[1][2] = "f7";
+            cypherKey[2][2] = "15";
+            cypherKey[3][2] = "88";
 
-        testPlainMessage[0][2] = "9a";
-        testPlainMessage[1][2] = "c6";
-        testPlainMessage[2][2] = "8d";
-        testPlainMessage[3][2] = "2a";
+            cypherKey[0][3] = "09";
+            cypherKey[1][3] = "cf";
+            cypherKey[2][3] = "4f";
+            cypherKey[3][3] = "3c";
 
-        testPlainMessage[0][3] = "e9";
-        testPlainMessage[1][3] = "f8";
-        testPlainMessage[2][3] = "48";
-        testPlainMessage[3][3] = "08";
+            plainMessage[0][0] = "19";
+            plainMessage[1][0] = "3d";
+            plainMessage[2][0] = "e3";
+            plainMessage[3][0] = "be";
 
-        generateKeySchedule(testCypherKey);
-        messageEncryption(testPlainMessage,testCypherKey);
+            plainMessage[0][1] = "a0";
+            plainMessage[1][1] = "f4";
+            plainMessage[2][1] = "e2";
+            plainMessage[3][1] = "2b";
+
+            plainMessage[0][2] = "9a";
+            plainMessage[1][2] = "c6";
+            plainMessage[2][2] = "8d";
+            plainMessage[3][2] = "2a";
+
+            plainMessage[0][3] = "e9";
+            plainMessage[1][3] = "f8";
+            plainMessage[2][3] = "48";
+            plainMessage[3][3] = "08";
+        }
+
+        generateKeySchedule();
+        messageEncryption();
     }
 
-    public static void messageEncryption(String[][] testPlainMessage, String[][] testCypherKey) {
-        boolean youtubeTest = false;
-        if (youtubeTest) {
+    public static void messageEncryption() {
+        if (youTubeTest) {
             //noinspection SpellCheckingInspection
             System.out.println("Before subbytes:");
-            print16Block(testPlainMessage);
+            print16Block(plainMessage);
             System.out.println("---------------");
-            subBytesTransformation(testPlainMessage);
+            subBytesTransformation(plainMessage);
             //noinspection SpellCheckingInspection
             System.out.println("After subbytes:");
-            print16Block(testPlainMessage);
+            print16Block(plainMessage);
             System.out.println("---------------");
 
-            shiftRows(testPlainMessage);
+            shiftRows(plainMessage);
 
             System.out.println("After shiftRows");
-            print16Block(testPlainMessage);
+            print16Block(plainMessage);
             System.out.println("---------------");
 
             System.out.println("After mixColumns");
-            mixColumns(testPlainMessage);
+            mixColumns(plainMessage);
             System.out.println("---------------");
 
             System.out.println("After addRoundKey");
-            addRoundKey(testPlainMessage, testCypherKey, 1);
+            addRoundKey(plainMessage, cypherKey, 1);
             System.out.println("---------------");
         }
 
-        // Initial Round.
-        addRoundKey(testPlainMessage,testCypherKey,0);
+        if (!youTubeTest) {
+            // Initial Round.
+            addRoundKey(plainMessage, cypherKey, 0);
 
-        // 9 Main Rounds.
-        for (int i = 1; i <= 9; i++) {
-            subBytesTransformation(testPlainMessage);
-            shiftRows(testPlainMessage);
-            mixColumns(testPlainMessage);
-            addRoundKey(testPlainMessage,testPlainMessage,i);
+            // 9 Main Rounds.
+            for (int i = 1; i <= 9; i++) {
+                subBytesTransformation(plainMessage);
+                shiftRows(plainMessage);
+                mixColumns(plainMessage);
+                System.out.println(i);
+                addRoundKey(plainMessage, cypherKey, i);
+            }
+
+            subBytesTransformation(plainMessage);
+            shiftRows(plainMessage);
+            addRoundKey(plainMessage, cypherKey, 10);
+
+            print16Block(plainMessage);
+            //print16Block();
+
+            for (int i = 0; i < 4; i++) {
+                StringBuilder msg = new StringBuilder();
+                for (int j = 4; j < 8; j++) {
+                    msg.append(cypherKey[i][j]).append(" ");
+                }
+                System.out.println(msg);
+            }
         }
-
-        subBytesTransformation(testPlainMessage);
-        shiftRows(testPlainMessage);
-        addRoundKey(testPlainMessage,testPlainMessage,10);
     }
 
 
@@ -132,11 +170,11 @@ public class Main {
         return colArr;
     }
 
-    private static void setColumn2dArray(String[][] message, String[] col, int x) {
-        message[0][x] = col[0];
-        message[1][x] = col[1];
-        message[2][x] = col[2];
-        message[3][x] = col[3];
+    private static void setColumn2dArray(String[][] arr, String[] col, int x) {
+        arr[0][x] = col[0];
+        arr[1][x] = col[1];
+        arr[2][x] = col[2];
+        arr[3][x] = col[3];
     }
 
     private static void shiftRows(String[][] message) {
@@ -221,7 +259,7 @@ public class Main {
         print16Block(message);
     }
 
-    private static void generateKeySchedule(String[][] cypherKey){
+    private static void generateKeySchedule(){
         for (int i = 4; i < 44; i++) {
             String[] previousFour = getColumn2dArray(cypherKey, i-1);
 
