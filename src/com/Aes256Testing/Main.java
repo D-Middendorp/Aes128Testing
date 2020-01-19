@@ -111,12 +111,10 @@ public class Main {
 
     public static void messageEncryption() {
         if (youTubeTest) {
-            //noinspection SpellCheckingInspection
             System.out.println("Before subbytes:");
             print16Block(plainMessage);
             System.out.println("---------------");
             subBytesTransformation(plainMessage);
-            //noinspection SpellCheckingInspection
             System.out.println("After subbytes:");
             print16Block(plainMessage);
             System.out.println("---------------");
