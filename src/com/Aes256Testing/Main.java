@@ -288,11 +288,10 @@ public class Main {
             String[] multipliedCol = mixColumnsMultiplyEntireColumn(getColumn2dArray(message, i));
             setColumn2dArray(message,multipliedCol,i);
         }
-        //print16Block(message);
     }
 
     // Taken from https://github.com/ajaytee/Comp3260
-    private static byte mixColumnsMultiply(byte numRGF, byte messageInput) {
+    /*private static byte mixColumnsMultiply(byte numRGF, byte messageInput) {
         byte returnValue = 0;
         byte temp;
         while (numRGF != 0) {
@@ -306,6 +305,7 @@ public class Main {
         }
         return returnValue;
     }
+    */
 
     // From https://en.wikipedia.org/wiki/Rijndael_MixColumns C code example.
     private static String[] mixColumnsMultiplyEntireColumn(String[] messageCol) {
