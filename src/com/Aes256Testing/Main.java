@@ -145,11 +145,22 @@ public class Main {
             // 9 Main Rounds.
             for (int i = 1; i <= 9; i++) {
                 System.out.println("Main forward round " + i);
+                System.out.println("After subbytes:");
                 subBytesTransformation(plainMessage);
+                print16Block(plainMessage);
+                System.out.println("---------------");
+                System.out.println("After shiftRows");
                 shiftRows(plainMessage);
+                print16Block(plainMessage);
+                System.out.println("---------------");
+                System.out.println("After mixColumns");
                 mixColumns(plainMessage);
+                print16Block(plainMessage);
+                System.out.println("---------------");
+                System.out.println("After addRoundKey");
                 addRoundKey(plainMessage, cypherKey, i);
                 print16Block(plainMessage);
+                System.out.println("---------------");
             }
 
             // Last Round 10.
@@ -201,11 +212,25 @@ public class Main {
             // 9 Main Inverse Rounds.
             for (int i = 9; i >= 1; i--) {
                 System.out.println("Main Inverse round " + i);
+                System.out.println("After AddRoundKey");
                 addRoundKey(plainMessage, cypherKey, i);
+                print16Block(plainMessage);
+                System.out.println("---------------");
+                System.out.println("After inverse MixColumns");
                 invMixColumns(plainMessage);
+                //for (int k = 0; k < 3; k++) {
+                //    mixColumns(plainMessage);
+                //}
+                print16Block(plainMessage);
+                System.out.println("---------------");
+                System.out.println("After inverse ShiftRows");
                 invShiftRows(plainMessage);
+                print16Block(plainMessage);
+                System.out.println("---------------");
+                System.out.println("After inverse SubBytes");
                 invSubBytesTransformation(plainMessage);
                 print16Block(plainMessage);
+                System.out.println("---------------");
             }
 
             // Last Round 10.
@@ -335,44 +360,41 @@ public class Main {
 
     private static void invMixColumns(String[][] message) {
         int[] invMatrix = {14,11,13,9,9,14,11,13,13,9,14,11,11,13,9,14};
+        String[][] result = new String[4][4];
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                //System.out.println("invMix = " + ((i*4)+(j+1)));
-                if (invMatrix[i * 4 + j] == 9) {
-                    byte a = (byte) Integer.parseInt(message[j][i],16);
+        for (int k = 0; k < 4; k++) {
+            byte[] hold = new byte[4];
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    byte a = (byte) Integer.parseInt(message[j][i], 16);
                     byte b = a;
-                    b = (byte) (b << 3);
-                    b ^= a;
-                    message[j][i] = String.format("%02x", b);
-                } else if (invMatrix[i * 4 + j] == 11) {
-                    byte a = (byte) Integer.parseInt(message[j][i],16);
-                    byte b = a;
-                    b = (byte) (b << 2);
-                    b ^= a;
-                    b = (byte) (b << 1);
-                    b ^= a;
-                    message[j][i] = String.format("%02x", b);
-                } else if (invMatrix[i * 4 + j] == 13) {
-                    byte a = (byte) Integer.parseInt(message[j][i],16);
-                    byte b = a;
-                    b = (byte) (b << 1);
-                    b ^= a;
-                    b = (byte) (b << 2);
-                    b ^= a;
-                    message[j][i] = String.format("%02x", b);
-                } else if (invMatrix[i * 4 + j] == 14) {
-                    byte a = (byte) Integer.parseInt(message[j][i],16);
-                    byte b = a;
-                    b = (byte) (b << 1);
-                    b ^= a;
-                    b = (byte) (b << 1);
-                    b ^= a;
-                    b = (byte) (b << 1);
-                    message[j][i] = String.format("%02x", b);
+                    if (invMatrix[k * 4 + j] == 9) {
+                        b = (byte) (b << 3);
+                        b ^= a;
+                    } else if (invMatrix[i * 4 + j] == 11) {
+                        b = (byte) (b << 2);
+                        b ^= a;
+                        b = (byte) (b << 1);
+                        b ^= a;
+                    } else if (invMatrix[k * 4 + j] == 13) {
+                        b = (byte) (b << 1);
+                        b ^= a;
+                        b = (byte) (b << 2);
+                        b ^= a;
+                    } else if (invMatrix[k * 4 + j] == 14) {
+                        b = (byte) (b << 1);
+                        b ^= a;
+                        b = (byte) (b << 1);
+                        b ^= a;
+                        b = (byte) (b << 1);
+                    }
+                    hold[j] = b;
                 }
+                byte resultNum = (byte) (hold[0] ^ hold[1] ^ hold[2] ^ hold[3]);
+                result[k][i] = String.format("%02x", resultNum);
             }
         }
+        plainMessage = result;
     }
 
     private static void addRoundKey(String[][] message, String[][] cypherKey, int round) {
