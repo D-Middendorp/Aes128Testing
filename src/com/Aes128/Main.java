@@ -1,4 +1,4 @@
-package com.Aes256Testing;
+package com.Aes128;
 
 public class Main {
     private static final String[] SBOX = {
